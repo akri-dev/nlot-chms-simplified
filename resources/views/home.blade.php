@@ -10,7 +10,11 @@
         <div class="col-6 d-flex justify-content-end align-items-center">
             <div class="me-2"><button class="btn btn-outline-success"><i class="fa-solid fa-user"></i> Profile List</button>
             </div>
-            <div><button class="btn btn-outline-primary"><i class="fa-solid fa-calendar-week"></i> Events List</button></div>
+            <div class="me-2"><button class="btn btn-outline-primary"><i class="fa-solid fa-calendar-week"></i> Events List</button></div>
+            <div><button class="btn btn-outline-dark"><i class="fa-solid fa-calendar-week"></i> Calendar</button></div>
+            
+
+
         </div>
     </div>
     <div class="row">
@@ -25,7 +29,8 @@
                                 <p class="mb-0 ms-1 me-auto">Ahlia - October 26</p>
 
                                 {{-- Action Buttons --}}
-                                <a href="" class="btn btn-info btn-sm" title="Profile"><i class="fa-solid fa-user-check"></i> Check Profile</a>
+                                <a href="" class="btn btn-info btn-sm" title="Profile"><i
+                                        class="fa-solid fa-user-check"></i> Check Profile</a>
                             </li>
                         </ol>
                     </div>
@@ -39,14 +44,16 @@
                                 <p class="mb-0 ms-1 me-auto">Cesar & Lourdes - October 04</p>
 
                                 {{-- Action Buttons --}}
-                                <a href="" class="btn btn-light btn-sm" title="Profile"><i class="fa-solid fa-calendar-days"></i></i> Check Calendar</a>
+                                <a href="" class="btn btn-light btn-sm" title="Profile"><i
+                                        class="fa-solid fa-calendar-days"></i></i> Check Calendar</a>
                             </li>
                             <li class="list-group-item d-flex align-items-center">
                                 {{-- Name and Birthday --}}
                                 <p class="mb-0 ms-1 me-auto">John & Geraldine - October 08</p>
 
                                 {{-- Action Buttons --}}
-                                <a href="" class="btn btn-light btn-sm" title="Profile"><i class="fa-solid fa-calendar-days"></i> Check Calendar</a>
+                                <a href="" class="btn btn-light btn-sm" title="Profile"><i
+                                        class="fa-solid fa-calendar-days"></i> Check Calendar</a>
                             </li>
                         </ol>
                     </div>
@@ -54,13 +61,14 @@
                 <div class="row">
                     <div class="col mb-2">
                         <h3 class="h4 mb-1">Events</h3>
-                        <ol class="list-group list-group-numbered">
+                        <ol class="list-group">
                             <li class="list-group-item d-flex align-items-center">
                                 {{-- Name and Birthday --}}
                                 <p class="mb-0 ms-1 me-auto">John & Geraldine - October 08</p>
 
                                 {{-- Action Buttons --}}
-                                <a href="" class="btn btn-light btn-sm" title="Profile"><i class="fa-solid fa-calendar-days"></i> Check Calendar</a>
+                                <a href="" class="btn btn-light btn-sm" title="Profile"><i
+                                        class="fa-solid fa-calendar-days"></i> Check Calendar</a>
                             </li>
                         </ol>
                     </div>
