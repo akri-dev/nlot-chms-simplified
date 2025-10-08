@@ -8,13 +8,12 @@
             <h1>October 2025</h1>
         </div>
         <div class="col-6 d-flex justify-content-end align-items-center">
-            <div class="me-2"><button class="btn btn-outline-success"><i class="fa-solid fa-user"></i> Profile List</button>
-            </div>
+            <div class="me-2"><a href="{{ route('profiles') }}">
+                <button class="btn btn-outline-success"><i class="fa-solid fa-user"></i> Profile List</button>
+                </div>
+            </a>
             <div class="me-2"><button class="btn btn-outline-primary"><i class="fa-solid fa-calendar-week"></i> Events List</button></div>
             <div><button class="btn btn-outline-dark"><i class="fa-solid fa-calendar-week"></i> Calendar</button></div>
-            
-
-
         </div>
     </div>
     <div class="row">
