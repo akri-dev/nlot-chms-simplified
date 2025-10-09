@@ -23,7 +23,7 @@
                 <td>(+63) 939 267 0582</td>
                 <td>Tagaytay City</td>
                 <td>May 01, 1997</td>
-                <td>Active - Leader, Staff</td>
+                <td><i class="bi bi-check-circle-fill text-success"></i> Active - Leader, Staff</td>
                 <td><button class="btn btn-secondary"><i class="fa-solid fa-magnifying-glass"></i></button></td>
             </tbody>
         </table>
