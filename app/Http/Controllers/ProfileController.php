@@ -18,4 +18,9 @@ class ProfileController extends Controller
     {
         return view('profiles.index');
     }
+
+    public function create()
+    {
+        return view('profiles.create');
+    }
 }

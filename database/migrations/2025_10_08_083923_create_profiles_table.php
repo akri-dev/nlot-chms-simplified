@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('contact_number', 20)->nullable();
             $table->date('birthday')->nullable();
             $table->enum('gender', ['Male', 'Female'])->nullable();
-
+            
             // Marriage Information
             // This field is nullable, assuming not everyone is married.
             $table->date('anniversary_date')->nullable()->comment('Date of marriage anniversary, if married.');
