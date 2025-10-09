@@ -9,10 +9,11 @@
         </div>
         <div class="col-6 d-flex justify-content-end align-items-center">
             <div class="me-2"><a href="{{ route('profiles') }}">
-                <button class="btn btn-success"><i class="fa-solid fa-user"></i> Profile List</button>
-                </div>
-            </a>
-            <div class="me-2"><button class="btn btn-primary"><i class="fa-solid fa-calendar-week"></i> Events List</button></div>
+                    <button class="btn btn-success"><i class="fa-solid fa-user"></i> Profile List</button>
+                </a>
+            </div>
+            <div class="me-2"><button class="btn btn-primary"><i class="fa-solid fa-calendar-week"></i> Events List</button>
+            </div>
             <div><button class="btn btn-dark"><i class="fa-solid fa-calendar-week"></i> Calendar</button></div>
         </div>
     </div>
@@ -76,15 +77,18 @@
         </div>
         <div class="col-4 text-center">
             <h4 class="h6 mb-1">Active Members</h4>
-            <div class="display-6 w-75 mx-auto py-1 border border-success text-success mb-1"><i class="fa-solid fa-users"></i> 30</div>
+            <div class="display-6 w-75 mx-auto py-1 border border-success text-success mb-1"><i
+                    class="fa-solid fa-users"></i> 30</div>
             <h4 class="h6 mb-1">Inactive Members</h4>
-            <div class="display-6 w-75 mx-auto py-1 border border-danger text-danger mb-1"><i class="fa-solid fa-users-slash"></i> 20
+            <div class="display-6 w-75 mx-auto py-1 border border-danger text-danger mb-1"><i
+                    class="fa-solid fa-users-slash"></i> 20
             </div>
             <h4 class="h6 mb-1">Volunteers, Staff, & Leaders</h4>
             <div class="display-6 w-75 mx-auto py-1 border border-warning text-warning mb-1"><i
                     class="fa-solid fa-users-between-lines"></i> 13</div>
             <h4 class="h6 mb-1">Recorded Profiles</h4>
-            <div class="display-6 w-75 mx-auto py-1 border border-primary text-primary mb-1"><i class="fa-solid fa-users-rectangle"></i>
+            <div class="display-6 w-75 mx-auto py-1 border border-primary text-primary mb-1"><i
+                    class="fa-solid fa-users-rectangle"></i>
                 50</div>
         </div>
     </div>
