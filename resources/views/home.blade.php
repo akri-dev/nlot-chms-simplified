@@ -89,7 +89,7 @@
             <h4 class="h6 mb-1">Recorded Profiles</h4>
             <div class="display-6 w-75 mx-auto py-1 border border-primary text-primary mb-1"><i
                     class="fa-solid fa-users-rectangle"></i>
-                50</div>
+                {{ $profile_count }}</div>
         </div>
     </div>
 

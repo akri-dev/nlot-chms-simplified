@@ -11,5 +11,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/', [HomeController::class, 'index'])->name('home');
     Route::get('/profiles', [ProfileController::class, 'index'])->name('profiles');
     Route::get('/profiles/create', [ProfileController::class, 'create'])->name('profiles.create');
+    Route::post('/profiles/save', [ProfileController::class, 'save'])->name('profiles.save');
 });
 
