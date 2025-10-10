@@ -10,21 +10,10 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
 
-    {{-- Bootstrap Icons CDN --}}
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
-
     {{-- Font Awesome CDN --}}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
         integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
         crossorigin="anonymous" referrerpolicy="no-referrer" />
-
-    {{-- Date Picker CSS --}}
-    {{-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vanillajs-datepicker@1.3.4/dist/css/datepicker.min.css"> --}}
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-    <link rel="stylesheet" type="text/css" href="https://npmcdn.com/flatpickr/dist/themes/material_red.css">
-
-    {{-- Custom CSS --}}
-    <link rel="stylesheet" href="{{ asset('css/styles.css') }}">
 </head>
 
 <body>
@@ -89,7 +78,8 @@
     <main class="py-4">
         <div class="container">
             <div class="row justify-content-center">
-                <div class="col-12">
+                
+                <div class="col-8">
                     @yield('content')
                 </div>
             </div>
@@ -99,27 +89,6 @@
     {{-- Bootstrap JS --}}
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous">
-    </script>
-
-    {{-- Date Picker JS --}}
-    {{-- <script src="https://cdn.jsdelivr.net/npm/vanillajs-datepicker@1.3.4/dist/js/datepicker-full.min.js"></script> --}}
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/plugins/confirmDate/confirmDate.js"></script>
-
-    <script>
-        const element = document.getElementsByClassName('calendar-picker');
-        // const datepicker = new Datepicker(elem, {
-        //     updateOnBlur: false,
-        //     format: 'MM dd, yyyy',  
-        //     todayButton: true,
-        //     todayButtonMode: 1,
-        //     startView: 2,
-        //     autohide: true
-        // });
-
-        flatpickr(element, {
-            dateFormat: "F d, Y"
-        });
     </script>
 </body>
 
