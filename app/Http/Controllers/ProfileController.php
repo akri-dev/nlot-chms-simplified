@@ -59,4 +59,19 @@ class ProfileController extends Controller
 
         return redirect()->route('profiles');
     }
+
+    public function anniversaries()
+    {
+        return view('profiles.anniversaries');
+    }
+
+    public function profile(Profile $profile)
+    {
+        return view('profiles.profile-list.data', ['profile' => $profile]);
+    }
+
+    public function update()
+    {
+        
+    }
 }
