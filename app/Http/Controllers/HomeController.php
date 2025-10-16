@@ -29,7 +29,15 @@ class HomeController extends Controller
     public function index()
     {   
         $profile_count = $this->profile_m->count();
+        $profile_active = \App\Models\Profile::where('member_status', 'Active')->count();
+        $profile_inactive = \App\Models\Profile::where('member_status', 'Inactive')->count();
+        $profiles_role = Profile::whereHas('roles', function ($query) {
+        $query->where('role_id', '>=', 2);
+    })->count();
         return view('home')
-                ->with('profile_count', $profile_count);
+                ->with('profile_count', $profile_count)
+                ->with('profile_active', $profile_active)
+                ->with('profile_inactive', $profile_inactive)
+                ->with('profiles_role', $profiles_role);
     }
 }
