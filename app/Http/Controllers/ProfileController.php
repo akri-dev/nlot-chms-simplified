@@ -48,7 +48,7 @@ class ProfileController extends Controller
             'email_address' => 'nullable|email|unique:profiles,email_address',
             'birthday' => 'nullable|date',
             'gender' => 'nullable|in:' . implode(',', $gender_values),
-            'marital_status' => 'nullable|in:' . implode(',', $marital_status_values),
+            'marital_status' => 'required|in:' . implode(',', $marital_status_values),
             'joined_date' => 'nullable|date',
             'baptism_date' => 'nullable|date',
         ]);

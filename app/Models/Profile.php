@@ -78,4 +78,34 @@ class Profile extends Model
             },
         );
     }
+
+    // Define a new accessor for the 'birthday' attribute
+    protected function formattedBirthday(): Attribute
+    {
+        return Attribute::make(
+            // This is the 'getter' logic when you call $profile->formatted_birthday
+            get: fn (mixed $value, array $attributes) => 
+                 // We access the original 'birthday' attribute's value, which is a Carbon instance,
+                 // and format it.
+                 $this->birthday ? $this->birthday->format('F d, Y') : null,
+        );
+    }
+    
+    // Repeat for other date fields (e.g., joined_date)
+    protected function formattedJoinedDate(): Attribute
+    {
+        return Attribute::make(
+            get: fn (mixed $value, array $attributes) => 
+                 $this->joined_date ? $this->joined_date->format('F d, Y') : null,
+        );
+    }
+
+    // Repeat for other date fields (e.g., joined_date)
+    protected function formattedBaptismDate(): Attribute
+    {
+        return Attribute::make(
+            get: fn (mixed $value, array $attributes) => 
+                 $this->baptism_date ? $this->baptism_date->format('F d, Y') : null,
+        );
+    }
 }

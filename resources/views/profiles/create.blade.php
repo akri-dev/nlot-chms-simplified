@@ -101,7 +101,7 @@
                     <div class="form-group col-3">
                         <label for="marital-status">Marital Status</label>
                         <select class="form-select" id="marital-status" aria-label="Marital Status"
-                            name="marital_status">
+                            name="marital_status" required>
                             <option value="" hidden>Select Marital Status</option>
                             <option value="Single">Single</option>
                             <option value="Married">Married</option>
