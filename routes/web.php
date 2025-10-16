@@ -22,7 +22,7 @@ Route::middleware('auth')->group(function () {
 
     # Profile Edit
     Route::get('/profiles/{profile}', [ProfileController::class, 'profile'])->name('profiles.profile');
-    Route::get('/profiles/{profile}/update', [ProfileController::class, 'update'])->name('profiles.profile.update');
+    Route::patch('/profiles/{profile}/update', [ProfileController::class, 'update'])->name('profiles.profile.update');
 
 });
 

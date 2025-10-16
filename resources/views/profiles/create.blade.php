@@ -85,11 +85,11 @@
                     <div class="form-group col-2">
                         <p class="mb-1 d-block">Gender</p>
                         <input class="btn-check text-dark " type="radio" name="gender" id="btn-check-male-outlined"
-                            value="Male" autocomplete="off">
+                            value="Male" autocomplete="off" required>
                         <label class="btn btn-outline-secondary d-inline-block px-4 mb-1 mb-lg-0"
                             for="btn-check-male-outlined">Male</label>
                         <input class="btn-check text-dark" type="radio" name="gender" id="btn-check-female-outlined"
-                            value="Female" autocomplete="off">
+                            value="Female" autocomplete="off" required>
                         <label class="btn btn-outline-secondary d-inline-block px-3"
                             for="btn-check-female-outlined">Female</label>
                         @error('gender')
