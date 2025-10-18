@@ -54,68 +54,54 @@
                             {{ $profile->birthday?->format('F j, Y') ?? 'Not specified' }}
                         </td>
                         @php
-
-                            $status = $profile->member_status;
-                            $output = '';
-                            $iconClass = '';
-                            $statusClass = '';
-
-                            // Define slugs for display hierarchy
-                            $baseRoleSlugs = ['lead_pastor', 'staff', 'board'];
-                            $profileRoleSlugs = $profile->roles->pluck('slug')->toArray();
-
-                            if ($status === \App\Enums\MemberStatusEnum::INACTIVE->value) {
-                                // --- INACTIVE LOGIC ---
+                            // 1. Check the primary member status first
+                            $isInactive = $profile->member_status->value === \App\Enums\MemberStatusEnum::INACTIVE->value;
+                            
+                            if ($isInactive) {
+                                // If Inactive, display "Inactive" and use the danger styling
                                 $output = 'Inactive';
-                                $iconClass = 'bi bi-x-circle-fill';
-                                $statusClass = 'text-danger';
+                                $statusClass = 'text-danger fw-bold';
+                                $iconClass = 'fa-solid fa-ban'; 
                             } else {
-                                // --- ACTIVE LOGIC ---
-                                $iconClass = 'bi bi-check-circle-fill';
-                                $statusClass = 'text-success';
-                                $displayBaseRole = null;
+                                // 2. If Active, proceed with complex role calculation (your existing logic)
+                                $baseRoleSlugs = ['staff', 'volunteer'];
+                                $profileRoles = $profile->roles->pluck('slug');
+                                
+                                // Check if *only* the 'member' role exists
+                                $isMemberOnly = $profileRoles->count() === 1 && $profileRoles->contains('member');
+                                
+                                $baseRole = $profileRoles->intersect($baseRoleSlugs)->first(); // Gets 'staff' or 'volunteer'
 
-                                // 1. Determine the Base Role (Highest precedence: Lead Pastor -> Staff -> Board)
-                                if (in_array('lead_pastor', $profileRoleSlugs)) {
-                                    $displayBaseRole = 'Lead Pastor';
-                                } elseif (in_array('staff', $profileRoleSlugs)) {
-                                    $displayBaseRole = 'Staff';
-                                } elseif (in_array('board', $profileRoleSlugs)) {
-                                    $displayBaseRole = 'Board';
-                                }
+                                $specificRoles = $profileRoles->reject(
+                                    fn($slug) =>
+                                    $slug === 'member' || in_array($slug, $baseRoleSlugs)
+                                )->map(fn($slug) => ucwords(str_replace('_', ' ', $slug))) // Format specific roles
+                                 ->toArray();
 
-                                // 2. Determine Specific Roles (Roles that are *not* the primary base roles and not 'member')
-                                $specificRoles = $profile->roles
-                                    ->filter(
-                                        fn($role) => !in_array($role->slug, $baseRoleSlugs) && $role->slug !== 'member',
-                                    )
-                                    ->pluck('name')
-                                    ->toArray();
+                                $output = '';
+                                $iconClass = 'fa-solid fa-check-circle'; // Default icon for Active
 
-                                // 3. Format the Output
-                                if ($displayBaseRole) {
-                                    // E.g., Staff - Admin, Team Member
-                                    $specificRolesDisplay = !empty($specificRoles)
-                                        ? ' - ' . implode(', ', $specificRoles)
-                                        : '';
-                                    $output = $displayBaseRole . $specificRolesDisplay;
+                                if ($isMemberOnly) {
+                                    // NEW: Member Only Logic
+                                    $output = 'Member';
+                                    $statusClass = 'text-primary'; // <-- SET TO TEXT-PRIMARY
+                                } elseif (empty($baseRole)) {
+                                    // Only 'Member' role is present (should be caught by $isMemberOnly, but kept for safety)
+                                    $output = 'Member';
+                                    $statusClass = 'text-primary'; // Safety fallback
                                 } else {
-                                    // No Base Role found. Default to "Member".
-                                    $displayBaseRole = 'Member';
+                                    // Base Role (Staff/Volunteer) + Specific Roles
+                                    $displayBaseRole = ucwords($baseRole);
                                     $specificRolesDisplay = !empty($specificRoles)
                                         ? ' - ' . implode(', ', $specificRoles)
                                         : '';
-
-                                    // If only 'Member' role is present (specificRoles is empty), just show "Member"
-                                    if (empty($specificRoles)) {
-                                        $output = 'Member';
-                                    } else {
-                                        // E.g., Member - Volunteer, Ministry Leader
-                                        $output = $displayBaseRole . $specificRolesDisplay;
-                                    }
+                                        
+                                    $output = $displayBaseRole . $specificRolesDisplay;
+                                    $statusClass = 'text-success'; // Staff/Volunteer/Specific Role
                                 }
                             }
                         @endphp
+                        
                         <td @class([$statusClass])>
                             <i class="{{ $iconClass }} me-1"></i> {{ $output }}
                         </td>

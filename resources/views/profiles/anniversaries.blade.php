@@ -8,6 +8,9 @@
             <h1>Anniversaries</h1>
         </div>
         <div class="col-6 d-flex justify-content-end align-items-center">
+            <a href="{{ route('profiles') }}">
+                <button class="btn btn-success me-2"><i class="fa-solid fa-user"></i> Profile List</button>
+            </a>
             <a href="">
                 <button class="btn btn-outline-warning">
                     <i class="fa-solid fa-link"></i> Profiles to Link</button>

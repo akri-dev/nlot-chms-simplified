@@ -7,6 +7,11 @@
         <div class="col d-flex justify-content-start align-items-center">
             <h1>Profile: {{ $profile->first_name }} {{ $profile->last_name }}</h1>
         </div>
+        <div class="col d-flex justify-content-end align-items-center">
+            <a href="{{ route('profiles') }}">
+                <button class="btn btn-success"><i class="fa-solid fa-user"></i> Profile List</button>
+            </a>
+        </div>
     </div>
     <div class="card">
         <div class="card-body">
@@ -161,6 +166,7 @@
                     <div class="col-md-3">
                         <label class="mb-2 d-block"><strong>1. Membership Status</strong></label>
                         {{-- Hidden input for the actual status value --}}
+                        {{-- **FIX: Ensure name="member_status" is present for submission** --}}
                         <input type="hidden" name="member_status" id="member-status-hidden"
                             value="{{ old('member_status', $profile->member_status->value) }}">
 
@@ -168,6 +174,8 @@
                             @php
                                 use App\Enums\MemberStatusEnum;
                                 $currentStatus = old('member_status', $profile->member_status->value);
+                                $isInactiveFromDb =
+                                    $profile->member_status->value === MemberStatusEnum::INACTIVE->value;
                             @endphp
 
                             {{-- Active/Member Button --}}
@@ -192,7 +200,7 @@
                     </div>
 
                     {{-- COLUMN 2: 2. Base Role (Mutually Exclusive) --}}
-                    <div class="col-md-3" id="roles-assignment-container"
+                    <div class="col-md-3" id="base-role-container-wrapper"
                         style="display: {{ $currentStatus == MemberStatusEnum::ACTIVE->value ? 'block' : 'none' }};">
                         <label class="mb-2 d-block"><strong>2. Base Role (Mutually Exclusive)</strong></label>
 
@@ -227,47 +235,14 @@
                     </div>
                 </div>
 
-                {{-- Reactivate Container moved to its own row/column for correct layout behavior --}}
-                <div class="row mb-4">
-                    <div class="col-md-6">
-                        <div id="reactivate-container"
-                            style="display: {{ $currentStatus == MemberStatusEnum::INACTIVE->value ? 'block' : 'none' }};">
-                            <button type="button" id="reactivate-button" class="btn btn-success px-4" disabled>
-                                Reactivate Membership
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
                 {{-- Conditional Role Assignment Container (Tier 2 Roles section begins here) --}}
-                <div id="tier-2-roles-container-wrapper">
+                <div id="tier-2-roles-container-wrapper"
+                    style="display: {{ $currentStatus == MemberStatusEnum::ACTIVE->value ? 'block' : 'none' }};">
                     <div class="row">
                         <div class="col-12">
                             <label class="mb-2 d-block"><strong>3. Specific Roles (Select Multiple)</strong></label>
                             <div id="tier-2-roles-container" class="border p-3 rounded bg-light">
                                 @php
-                                    // --- REFACTORED SLUG DEFINITIONS FOR DISPLAY ORDER ---
-
-                                    // Volunteer Display Order
-                                    $volunteerDisplayOrderSlugs = [
-                                        'ministry_leader', // Ministry Head
-                                        'ministry_assistant',
-                                        'pastor_in_training',
-                                        'team_member',
-                                    ];
-
-                                    // Staff Display Order (Requested Order)
-                                    $staffDisplayOrderSlugs = [
-                                        'admin',
-                                        'ministry_leader', // Ministry Head
-                                        'ministry_assistant',
-                                        'pastor_in_training',
-                                        'associate_pastor',
-                                        'board',
-                                        'lead_pastor',
-                                        'church_advisor',
-                                    ];
-
                                     // Filter all roles that are NOT base/member roles, and convert to an array keyed by slug for easy lookup.
                                     $allTier2Roles = $roles
                                         ->filter(fn($role) => !in_array($role->slug, ['member', 'staff', 'volunteer']))
@@ -340,7 +315,7 @@
                 </div>
                 {{-- END: New Conditional Membership Status and Roles Section --}}
 
-                {{-- ... (Existing Action buttons container) ... --}}
+                {{-- ... (Action buttons container) ... --}}
                 <div class="row mt-4">
                     <div class="col-12">
                         {{-- Action buttons container --}}
@@ -377,9 +352,11 @@
             const cancelEditButton = document.getElementById('cancel-edit-button');
             const editModeButtons = document.getElementById('edit-mode-buttons');
             const statusContainer = document.getElementById('member-status-container');
-            const rolesAssignmentContainer = document.getElementById('roles-assignment-container');
-            const reactivateContainer = document.getElementById('reactivate-container');
-            const reactivateButton = document.getElementById('reactivate-button');
+            const baseRoleContainerWrapper = document.getElementById(
+                'base-role-container-wrapper'); // Changed ID to wrapper
+            const tier2RolesContainerWrapper = document.getElementById(
+                'tier-2-roles-container-wrapper'); // Changed ID to wrapper
+
             const memberStatusHidden = document.getElementById('member-status-hidden');
             const baseRoleHidden = document.getElementById('base-role-hidden');
             const baseRoleChecks = form.querySelectorAll('.base-role-check');
@@ -390,7 +367,8 @@
 
             // Select all editable form controls
             const profileInputs = form.querySelectorAll('input, select, textarea');
-            const editableInputs = Array.from(profileInputs).filter(input => !input.dataset.statusLabel && !input.classList.contains('base-role-check') && !input.classList.contains('tier-2-role'));
+            const editableInputs = Array.from(profileInputs).filter(input => !input.dataset.statusLabel && !input
+                .classList.contains('base-role-check') && !input.classList.contains('tier-2-role'));
 
             // Define initial variables from Blade (data from the database)
             const initialStatus = memberStatusHidden.value;
@@ -403,18 +381,29 @@
             // IDs for logic checks
             const leadPastorRoleId = @json(\App\Models\Role::where('slug', 'lead_pastor')->value('id') ?? 0);
             const churchAdvisorRoleId = @json(\App\Models\Role::where('slug', 'church_advisor')->value('id') ?? 0);
-            const ministryAssistantRoleId = @json(\App\Models\Role::where('slug', 'ministry_assistant')->value('id') ?? 0); 
+            const ministryAssistantRoleId = @json(\App\Models\Role::where('slug', 'ministry_assistant')->value('id') ?? 0);
             const associatePastorRoleId = @json(\App\Models\Role::where('slug', 'associate_pastor')->value('id') ?? 0);
+            const trainingPastorRoleId = @json(\App\Models\Role::where('slug', 'pastor_in_training')->value('id') ?? 0);
+            
+            // NEW: Get the Role ID for 'board'
+            const boardRoleId = @json(\App\Models\Role::where('slug', 'board')->value('id') ?? 0);
+
+            // NEW: Define roles that can coexist with Church Advisor
+            const exemptAdvisorConflictRoleIds = [
+                churchAdvisorRoleId, 
+                boardRoleId, 
+                associatePastorRoleId 
+            ];
 
             const MAX_LIMIT = 2;
 
-            // --- Helper Functions ---
+            // --- Helper Functions (No changes needed for the core logic of these) ---
 
-            // Sets the CHECKED state for roles in a specific container based on database values (initialRoleIds)
             function setCheckedStateForContainer(container) {
                 if (!container) return;
                 container.querySelectorAll('.tier-2-role').forEach(input => {
                     const roleId = parseInt(input.value);
+                    // Use initialRoleIds (DB state) to set checks
                     if (initialRoleIds.includes(roleId)) {
                         input.checked = true;
                     } else {
@@ -423,7 +412,6 @@
                 });
             }
 
-            // Helper to clear, disable, and remove name from a specific container (used for the UNSELECTED group)
             function clearUnselectedContainer(container) {
                 if (!container) return;
                 container.querySelectorAll('.tier-2-role').forEach(input => {
@@ -434,7 +422,6 @@
                 });
             }
 
-            // Clears only the checked state for the currently visible container (for a FRESH START)
             function clearCheckedState(container) {
                 if (!container) return;
                 container.querySelectorAll('.tier-2-role').forEach(input => {
@@ -442,25 +429,35 @@
                 });
             }
 
+            // Function to handle showing/hiding roles based on the selected status
             function toggleRolesAssignment(status) {
                 if (status === 'Active') {
-                    rolesAssignmentContainer.style.display = 'block';
-                    reactivateContainer.style.display = 'none';
-                } else {
-                    rolesAssignmentContainer.style.display = 'none';
-                    reactivateContainer.style.display = 'block';
+                    baseRoleContainerWrapper.style.display = 'block';
+                    tier2RolesContainerWrapper.style.display = 'block';
 
+                } else { // Inactive
+                    baseRoleContainerWrapper.style.display = 'none';
+                    tier2RolesContainerWrapper.style.display = 'none';
+
+                    // Clear base role selection and hidden value
                     baseRoleChecks.forEach(input => input.checked = false);
                     baseRoleHidden.value = '';
 
+                    // Clear all specific role display/checks
                     clearUnselectedContainer(volunteerRolesContainer);
                     clearUnselectedContainer(staffRolesContainer);
+
+                    // Ensure all checkboxes are unchecked and disabled immediately when switching to Inactive
+                    tier2RoleCheckboxes.forEach(input => {
+                        input.checked = false;
+                        input.disabled = true;
+                    });
 
                     updateRoleSelectionDisplay(null);
                 }
             }
 
-            // Manages visibility, DISABLED state, and NAME attribute state for the SELECTED container
+            // Function to handle role selection display and conflict/limit checks
             function updateRoleSelectionDisplay(baseRole) {
                 const isEditing = form.dataset.isEditing === 'true';
 
@@ -483,25 +480,22 @@
                 if (targetContainer) {
                     targetContainer.style.display = 'block';
 
-                    // --- CONFLICT LOGIC SETUP ---
-                    // Get the IDs of the roles currently CHECKED by the user in the form
+                    // --- CONFLICT LOGIC SETUP (Uses currently checked state) ---
                     const currentlyCheckedRoleIds = Array.from(form.querySelectorAll('.tier-2-role:checked'))
                         .map(input => parseInt(input.value));
 
                     const isLeadPastorSelected = currentlyCheckedRoleIds.includes(leadPastorRoleId);
                     const isChurchAdvisorSelected = currentlyCheckedRoleIds.includes(churchAdvisorRoleId);
 
-                    // Roles that conflict with Lead Pastor
-                    const leadPastorConflictIds = [
-                        ministryAssistantRoleId,
-                        associatePastorRoleId,
-                    ];
-
-                    // Check if any of the Lead Pastor conflict roles are selected
-                    const isLeadPastorConflictRoleSelected = currentlyCheckedRoleIds.some(id => leadPastorConflictIds.includes(id));
-
-                    // Check if any non-advisor role is selected (for Church Advisor conflict)
-                    const isNonAdvisorRoleSelected = currentlyCheckedRoleIds.some(id => id !== churchAdvisorRoleId);
+                    const leadPastorConflictIds = [ministryAssistantRoleId, associatePastorRoleId, trainingPastorRoleId ];
+                    const isLeadPastorConflictRoleSelected = currentlyCheckedRoleIds.some(id =>
+                        leadPastorConflictIds.includes(id));
+                    
+                    // OLD: const isNonAdvisorRoleSelected = currentlyCheckedRoleIds.some(id => id !== churchAdvisorRoleId);
+                    // NEW: Check if any role selected is NOT in the exempt list (i.e., a conflicting role)
+                    const isConflictingRoleSelectedWithAdvisor = currentlyCheckedRoleIds.some(id => 
+                        !exemptAdvisorConflictRoleIds.includes(id)
+                    );
                     // --- END CONFLICT LOGIC SETUP ---
 
 
@@ -514,19 +508,23 @@
                         if (isEditing) {
                             input.setAttribute('name', 'roles[]');
                         } else {
-                            input.removeAttribute('name'); // Remove name in read-only mode
+                            input.removeAttribute('name');
                         }
 
-                        // 1. Check for exclusivity conflict (Runs first as it depends on current selection)
+                        // 1. Check for exclusivity conflict
                         if (isEditing) {
-                            // Rule B: Church Advisor Conflict (Most restrictive)
-                            if (isChurchAdvisorSelected && roleId !== churchAdvisorRoleId) {
+                            
+                            // NEW CHURCH ADVISOR CONFLICT LOGIC
+                            // If Church Advisor is selected AND the current role is not in the exempt list (it's a conflicting role)
+                            if (isChurchAdvisorSelected && !exemptAdvisorConflictRoleIds.includes(roleId)) {
                                 isDisabledByConflict = true;
-                            } else if (roleId === churchAdvisorRoleId && isNonAdvisorRoleSelected) {
+                            } 
+                            // If the current role is Church Advisor AND a conflicting role is also selected
+                            else if (roleId === churchAdvisorRoleId && isConflictingRoleSelectedWithAdvisor) {
                                 isDisabledByConflict = true;
                             }
 
-                            // Rule A: Lead Pastor Exclusivity 
+
                             if (!isDisabledByConflict) {
                                 if (roleId === leadPastorRoleId && isLeadPastorConflictRoleSelected) {
                                     isDisabledByConflict = true;
@@ -536,14 +534,13 @@
                             }
                         }
 
-                        // ⭐ 2. Check for Lead Pastor/Church Advisor max limit (This check applies the PERMANENT DISABLE requested)
+                        // 2. Check for Lead Pastor/Church Advisor max limit
                         if (roleId === leadPastorRoleId || roleId === churchAdvisorRoleId) {
-                            const roleSlug = (roleId === leadPastorRoleId) ? 'lead_pastor' : 'church_advisor';
-
+                            const roleSlug = (roleId === leadPastorRoleId) ? 'lead_pastor' :
+                                'church_advisor';
                             const currentProfileHasRole = initialRoleIds.includes(roleId);
                             const othersCount = initialLimitedRoleCounts[roleSlug];
 
-                            // If limit is reached AND current profile doesn't have the role, disable it.
                             if (othersCount >= MAX_LIMIT && !currentProfileHasRole) {
                                 isDisabledByLimit = true;
                             }
@@ -552,8 +549,9 @@
                         // Final disabled state: Disabled if NOT editing OR disabled by limit OR disabled by conflict
                         input.disabled = !isEditing || isDisabledByLimit || isDisabledByConflict;
 
-                        // Uncheck on conflict if the profile doesn't already have it
-                        if (input.checked && (isDisabledByLimit || isDisabledByConflict) && !initialRoleIds.includes(
+                        // Uncheck on conflict
+                        if (input.checked && (isDisabledByLimit || isDisabledByConflict) && !initialRoleIds
+                            .includes(
                                 roleId)) {
                             input.checked = false;
                         }
@@ -563,7 +561,8 @@
                 }
             }
 
-            // --- Edit Mode Toggle (setEditMode) remains unchanged ---
+
+            // --- Edit Mode Toggle ---
             function setEditMode(isEditing) {
                 const currentStatus = memberStatusHidden.value;
                 const currentBaseRole = baseRoleHidden.value;
@@ -575,29 +574,28 @@
                     input.disabled = !isEditing;
                 });
 
-                // 2. Toggle Membership Status buttons & Reactivate button
+                // 2. Toggle Membership Status buttons & Reactivate button (if it exists)
                 statusContainer.querySelectorAll('input').forEach(input => input.disabled = !isEditing);
-                reactivateButton.disabled = !isEditing;
 
                 // 3. Toggle Base Roles buttons
                 baseRoleChecks.forEach(input => input.disabled = !isEditing || currentStatus === 'Inactive');
 
                 // 4. Initial check restoration on Edit ON 
                 if (isEditing && currentStatus === 'Active') {
-                    let selectedContainer = currentBaseRole === 'volunteer' ? volunteerRolesContainer : staffRolesContainer;
-                    let unselectedContainer = currentBaseRole === 'volunteer' ? staffRolesContainer : volunteerRolesContainer;
+                    let selectedContainer = currentBaseRole === 'volunteer' ? volunteerRolesContainer :
+                        staffRolesContainer;
+                    let unselectedContainer = currentBaseRole === 'volunteer' ? staffRolesContainer :
+                        volunteerRolesContainer;
 
-                    // Restore checks only for the currently selected base role
                     setCheckedStateForContainer(selectedContainer);
-                    // Clear and hide the unselected one
                     clearUnselectedContainer(unselectedContainer);
                 } else {
-                    // Status is Inactive, clear everything
                     clearUnselectedContainer(volunteerRolesContainer);
                     clearUnselectedContainer(staffRolesContainer);
                 }
 
-                // Call display update to apply conflict/limit disabling
+                // Call display update to ensure visibility is correct
+                toggleRolesAssignment(currentStatus);
                 updateRoleSelectionDisplay(currentStatus === 'Active' ? currentBaseRole : null);
 
                 // 5. Toggle buttons visibility
@@ -617,18 +615,22 @@
                     if (initialBaseRole) {
                         document.getElementById('base-role-' + initialBaseRole).checked = true;
                         baseRoleHidden.value = initialBaseRole;
+                    } else {
+                        baseRoleChecks.forEach(input => input.checked = false);
+                        baseRoleHidden.value = '';
                     }
 
                     // Restore the correct visibility and checking the correct boxes based on initial data
                     toggleRolesAssignment(initialStatus);
 
-                    let finalSelectedContainer = initialBaseRole === 'volunteer' ? volunteerRolesContainer : staffRolesContainer;
-                    let finalUnselectedContainer = initialBaseRole === 'volunteer' ? staffRolesContainer : volunteerRolesContainer;
+                    let finalSelectedContainer = initialBaseRole === 'volunteer' ? volunteerRolesContainer :
+                        staffRolesContainer;
+                    let finalUnselectedContainer = initialBaseRole === 'volunteer' ? staffRolesContainer :
+                        volunteerRolesContainer;
 
                     clearUnselectedContainer(finalUnselectedContainer);
                     setCheckedStateForContainer(finalSelectedContainer);
-                    
-                    // Re-run display logic to apply limits and show current state
+
                     updateRoleSelectionDisplay(initialBaseRole);
 
                     editableInputs.forEach(input => input.disabled = true);
@@ -641,6 +643,8 @@
                 if (event.target.name === 'member_status_radio') {
                     const status = event.target.value;
                     memberStatusHidden.value = status;
+
+                    // This call handles the immediate hiding of roles
                     toggleRolesAssignment(status);
 
                     const isEditing = form.dataset.isEditing === 'true';
@@ -648,18 +652,7 @@
                 }
             });
 
-            reactivateButton.addEventListener('click', () => {
-                const activeRadio = document.getElementById('status-active');
-                if (activeRadio) {
-                    activeRadio.checked = true;
-                    memberStatusHidden.value = 'Active';
-                    toggleRolesAssignment('Active');
 
-                    baseRoleChecks.forEach(input => input.disabled = false);
-                }
-            });
-
-            // Logic on Base Role Change for fresh selection
             baseRoleChecks.forEach(checkbox => {
                 checkbox.addEventListener('change', (event) => {
                     const baseRole = event.target.value;
@@ -676,18 +669,13 @@
                         selectedContainer = staffRolesContainer;
                     }
 
-                    // 1. Clear the UNSELECTED container
                     clearUnselectedContainer(unselectedContainer);
-
-                    // 2. Clear the checked state for the currently visible/selected group to ensure a FRESH start
                     clearCheckedState(selectedContainer);
 
-                    // 3. Run display logic: This REAPPLIES the permanent limit disability
                     updateRoleSelectionDisplay(baseRole);
                 });
             });
 
-            // Add event listener to re-evaluate disabled state whenever a Tier 2 role changes (for conflict checks)
             tier2RoleCheckboxes.forEach(checkbox => {
                 checkbox.addEventListener('change', () => {
                     const currentBaseRole = baseRoleHidden.value;
@@ -697,16 +685,13 @@
 
 
             // --- Initialization ---
-
-            // 1. Set initial checked state based on initial profile data (only for the initial base role)
-            let initialSelectedContainer = initialBaseRole === 'volunteer' ? volunteerRolesContainer : staffRolesContainer;
+            let initialSelectedContainer = initialBaseRole === 'volunteer' ? volunteerRolesContainer :
+                staffRolesContainer;
             setCheckedStateForContainer(initialSelectedContainer);
 
-            // 2. Set initial disabled and visible state
             editModeButtons.style.display = 'none';
-            setEditMode(false);
+            setEditMode(false); // Ensure the initial state is read-only and visibility is based on DB status
 
-            // Event listeners
             editButton.addEventListener('click', () => setEditMode(true));
             cancelEditButton.addEventListener('click', () => setEditMode(false));
         });
