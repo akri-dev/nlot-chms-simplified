@@ -78,18 +78,16 @@
         <div class="col-4 text-center">
             <h4 class="h6 mb-1">Active Members</h4>
             <div class="display-6 w-75 mx-auto py-1 border border-success text-success mb-1"><i
-                    class="fa-solid fa-users"></i> 30</div>
+                    class="fa-solid fa-users"></i> {{ $profile_active }}</div>
             <h4 class="h6 mb-1">Inactive Members</h4>
             <div class="display-6 w-75 mx-auto py-1 border border-danger text-danger mb-1"><i
-                    class="fa-solid fa-users-slash"></i> 20
-            </div>
+                    class="fa-solid fa-users-slash"></i> {{ $profile_inactive }}</div>
             <h4 class="h6 mb-1">Volunteers, Staff, & Leaders</h4>
             <div class="display-6 w-75 mx-auto py-1 border border-warning text-warning mb-1"><i
-                    class="fa-solid fa-users-between-lines"></i> 13</div>
+                    class="fa-solid fa-users-between-lines"></i> {{ $profiles_role }}</div>
             <h4 class="h6 mb-1">Recorded Profiles</h4>
             <div class="display-6 w-75 mx-auto py-1 border border-primary text-primary mb-1"><i
-                    class="fa-solid fa-users-rectangle"></i>
-                {{ $profile_count }}</div>
+                    class="fa-solid fa-users-rectangle"></i> {{ $profile_count }}</div>
         </div>
     </div>
 

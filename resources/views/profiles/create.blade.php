@@ -85,11 +85,11 @@
                     <div class="form-group col-2">
                         <p class="mb-1 d-block">Gender</p>
                         <input class="btn-check text-dark " type="radio" name="gender" id="btn-check-male-outlined"
-                            value="Male" autocomplete="off">
+                            value="Male" autocomplete="off" required>
                         <label class="btn btn-outline-secondary d-inline-block px-4 mb-1 mb-lg-0"
                             for="btn-check-male-outlined">Male</label>
                         <input class="btn-check text-dark" type="radio" name="gender" id="btn-check-female-outlined"
-                            value="Female" autocomplete="off">
+                            value="Female" autocomplete="off" required>
                         <label class="btn btn-outline-secondary d-inline-block px-3"
                             for="btn-check-female-outlined">Female</label>
                         @error('gender')
@@ -101,7 +101,7 @@
                     <div class="form-group col-3">
                         <label for="marital-status">Marital Status</label>
                         <select class="form-select" id="marital-status" aria-label="Marital Status"
-                            name="marital_status">
+                            name="marital_status" required>
                             <option value="" hidden>Select Marital Status</option>
                             <option value="Single">Single</option>
                             <option value="Married">Married</option>

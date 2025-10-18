@@ -121,6 +121,8 @@
             dateFormat: "F d, Y"
         });
     </script>
+
+    @stack('scripts')
 </body>
 
 </html>
