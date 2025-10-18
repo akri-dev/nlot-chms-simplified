@@ -53,6 +53,21 @@ class Profile extends Model
         'member_status' => MemberStatusEnum::class
     ];
 
+    protected function fullName(): Attribute
+    {
+        return Attribute::make(
+            get: fn (mixed $value, array $attributes) => trim("{$attributes['first_name']} {$attributes['middle_name']} {$attributes['last_name']}"),
+        );
+    }
+
+    protected function birthdayMonthDay(): Attribute
+    {
+        return Attribute::make(
+            // Since 'birthday' is cast to 'date', $this->birthday is a Carbon instance.
+            get: fn (mixed $value, array $attributes) => $this->birthday ? $this->birthday->format('F d') : 'N/A',
+        );
+    }
+
     protected function middleNameInitial(): Attribute
     {
         return Attribute::make(
@@ -111,15 +126,6 @@ class Profile extends Model
         );
     }
 
-    // Notes:
-
-    // + Multiple Roles can be assigned
-    // + By default, new profile will be 'Member'
-    // + Staff and Board are not Volunteers
-    // + If inactive, status will default to 'Member'
-    // + Ministry Leader can be 'Staff' or 'Volunteer'
-    // + Lead Pastor cannot be 'Staff' or 'Volunteer'
-
     public function roles()
     {
         // The second argument is the pivot table name (optional if following Laravel conventions)
@@ -132,22 +138,7 @@ class Profile extends Model
         return $this->roles->contains('slug', $roleSlug);
     }
 
-    protected function setMemberStatusAttribute($value)
-    {
-        // If status is being set to 'Inactive'
-        if ($value === MemberStatusEnum::INACTIVE) {
-            // Find the Member role
-            $memberRole = \App\Models\Role::where('slug', 'member')->first();
-
-            if ($memberRole) {
-                // Detach all current roles, and only attach the 'Member' role.
-                // This ensures "If inactive, status will default to 'Member'".
-                $this->roles()->sync([$memberRole->id]);
-            }
-        }
-
-        $this->attributes['member_status'] = $value;
-    }
+    // NOTE: The setMemberStatusAttribute mutator has been removed to allow the Controller to handle role synchronization.
 
     protected static function booted()
     {
