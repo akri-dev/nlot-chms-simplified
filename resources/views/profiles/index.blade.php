@@ -8,7 +8,7 @@
             <h1>Profile list</h1>
         </div>
         <div class="col-6 d-flex justify-content-end align-items-center">
-            <a href="{{ route('profiles.anniversaries')}}">
+            <a href="{{ route('profiles.anniversaries') }}">
                 <button class="btn btn-warning me-2">
                     <i class="bi bi-people"></i> Anniversary List</button>
             </a>
@@ -53,8 +53,74 @@
                         ])>
                             {{ $profile->birthday?->format('F j, Y') ?? 'Not specified' }}
                         </td>
-                        <td><i class="bi bi-check-circle-fill text-success"></i> Active - Pastor, Leader, Staff</td>
-                        <td><a href="{{ route('profiles.profile', $profile->id) }}"><button class="btn btn-secondary"><i class="fa-solid fa-magnifying-glass"></i></button></a></td>
+                        @php
+
+                            $status = $profile->member_status;
+                            $output = '';
+                            $iconClass = '';
+                            $statusClass = '';
+
+                            // Define slugs for display hierarchy
+                            $baseRoleSlugs = ['lead_pastor', 'staff', 'board'];
+                            $profileRoleSlugs = $profile->roles->pluck('slug')->toArray();
+
+                            if ($status === \App\Enums\MemberStatusEnum::INACTIVE->value) {
+                                // --- INACTIVE LOGIC ---
+                                $output = 'Inactive';
+                                $iconClass = 'bi bi-x-circle-fill';
+                                $statusClass = 'text-danger';
+                            } else {
+                                // --- ACTIVE LOGIC ---
+                                $iconClass = 'bi bi-check-circle-fill';
+                                $statusClass = 'text-success';
+                                $displayBaseRole = null;
+
+                                // 1. Determine the Base Role (Highest precedence: Lead Pastor -> Staff -> Board)
+                                if (in_array('lead_pastor', $profileRoleSlugs)) {
+                                    $displayBaseRole = 'Lead Pastor';
+                                } elseif (in_array('staff', $profileRoleSlugs)) {
+                                    $displayBaseRole = 'Staff';
+                                } elseif (in_array('board', $profileRoleSlugs)) {
+                                    $displayBaseRole = 'Board';
+                                }
+
+                                // 2. Determine Specific Roles (Roles that are *not* the primary base roles and not 'member')
+                                $specificRoles = $profile->roles
+                                    ->filter(
+                                        fn($role) => !in_array($role->slug, $baseRoleSlugs) && $role->slug !== 'member',
+                                    )
+                                    ->pluck('name')
+                                    ->toArray();
+
+                                // 3. Format the Output
+                                if ($displayBaseRole) {
+                                    // E.g., Staff - Admin, Team Member
+                                    $specificRolesDisplay = !empty($specificRoles)
+                                        ? ' - ' . implode(', ', $specificRoles)
+                                        : '';
+                                    $output = $displayBaseRole . $specificRolesDisplay;
+                                } else {
+                                    // No Base Role found. Default to "Member".
+                                    $displayBaseRole = 'Member';
+                                    $specificRolesDisplay = !empty($specificRoles)
+                                        ? ' - ' . implode(', ', $specificRoles)
+                                        : '';
+
+                                    // If only 'Member' role is present (specificRoles is empty), just show "Member"
+                                    if (empty($specificRoles)) {
+                                        $output = 'Member';
+                                    } else {
+                                        // E.g., Member - Volunteer, Ministry Leader
+                                        $output = $displayBaseRole . $specificRolesDisplay;
+                                    }
+                                }
+                            }
+                        @endphp
+                        <td @class([$statusClass])>
+                            <i class="{{ $iconClass }} me-1"></i> {{ $output }}
+                        </td>
+                        <td><a href="{{ route('profiles.profile', $profile->id) }}"><button class="btn btn-secondary"><i
+                                        class="fa-solid fa-magnifying-glass"></i></button></a></td>
                     </tr>
                 @endforeach
 
