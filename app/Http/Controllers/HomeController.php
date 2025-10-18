@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-
 use App\Models\Profile;
+use Carbon\Carbon;
 
 class HomeController extends Controller
 {
@@ -28,6 +28,11 @@ class HomeController extends Controller
      */
     public function index()
     {   
+        // Fetch current month's birthdays, ordered by the day of the month
+        $birthdays = Profile::whereMonth('birthday', Carbon::now()->month)
+            ->orderBy('birthday', 'asc')
+            ->get();
+
         $profile_count = $this->profile_m->count();
         $profile_active = \App\Models\Profile::where('member_status', 'Active')->count();
         $profile_inactive = \App\Models\Profile::where('member_status', 'Inactive')->count();
@@ -38,6 +43,6 @@ class HomeController extends Controller
                 ->with('profile_count', $profile_count)
                 ->with('profile_active', $profile_active)
                 ->with('profile_inactive', $profile_inactive)
-                ->with('profiles_role', $profiles_role);
-    }
+                ->with('profiles_role', $profiles_role)
+                ->with('birthdays', $birthdays);    }
 }

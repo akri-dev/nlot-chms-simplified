@@ -4,10 +4,10 @@
 
 @section('content')
     <div class="row mb-2">
-        <div class="col-6 d-flex justify-content-start align-items-center">
-            <h1>October 2025</h1>
+        <div class="col d-flex justify-content-start align-items-center">
+            <h1>{{ \Carbon\Carbon::now()->format('F Y') }}</h1>
         </div>
-        <div class="col-6 d-flex justify-content-end align-items-center">
+        <div class="col d-flex justify-content-end align-items-center">
             <div class="me-2"><a href="{{ route('profiles') }}">
                     <button class="btn btn-success"><i class="fa-solid fa-user"></i> Profile List</button>
                 </a>
@@ -24,14 +24,21 @@
                     <div class="col mb-2">
                         <h3 class="h4 mb-1">Birthdays</h3>
                         <ol class="list-group list-group-numbered">
+                            {{-- REFACTORED BIRTHDAY LIST --}}
+                            @forelse ($birthdays as $profile)
                             <li class="list-group-item d-flex align-items-center">
-                                {{-- Name and Birthday --}}
-                                <p class="mb-0 ms-1 me-auto">Ahlia - October 26</p>
+                                {{-- Output: "Full Name of Celebrant - Current Month Day" --}}
+                                <p class="mb-0 ms-1 me-auto">{{ $profile->full_name }} - {{ $profile->birthday_month_day }}</p>
 
-                                {{-- Action Buttons --}}
-                                <a href="" class="btn btn-info btn-sm" title="Profile"><i
-                                        class="fa-solid fa-user-check"></i> Check Profile</a>
+                                {{-- Action Buttons (assuming a route to view profile exists) --}}
+                                <a href="{{ route('profiles.profile', $profile->id) }}" class="btn btn-info btn-sm" title="Profile"><i
+                                    class="fa-solid fa-user"></i> View Profile</a>
                             </li>
+                            @empty
+                            <li class="list-group-item d-flex align-items-center">
+                                <p class="mb-0 ms-1 me-auto">No birthdays recorded for this month.</p>
+                            </li>
+                            @endforelse
                         </ol>
                     </div>
                 </div>
