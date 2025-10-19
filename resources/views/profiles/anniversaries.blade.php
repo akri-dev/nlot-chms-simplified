@@ -3,6 +3,7 @@
 @section('title', 'Anniversaries')
 
 @section('content')
+    @include('profiles.anniversary-modal.link')
     <div class="row mb-2">
         <div class="col-6 d-flex justify-content-start align-items-center">
             <h1>Anniversaries</h1>
@@ -11,10 +12,8 @@
             <a href="{{ route('profiles') }}">
                 <button class="btn btn-success me-2"><i class="fa-solid fa-user"></i> Profile List</button>
             </a>
-            <a href="">
-                <button class="btn btn-outline-warning">
-                    <i class="fa-solid fa-link"></i> Profiles to Link</button>
-            </a>
+            <button type="button" data-bs-toggle="modal" data-bs-target="#linkModal" class="btn btn-outline-warning">
+                <i class="fa-solid fa-link"></i> Profiles to Link</button>
         </div>
     </div>
     <div class="row mb-2">

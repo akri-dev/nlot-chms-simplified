@@ -74,7 +74,8 @@ class ProfileController extends Controller
 
     public function anniversaries()
     {
-        return view('profiles.anniversaries');
+        $married_profiles = Profile::where('marital_status', 'married')->get();
+        return view('profiles.anniversaries')->with('married_profiles');
     }
 
     public function profile(Profile $profile)
