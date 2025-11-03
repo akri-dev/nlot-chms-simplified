@@ -26,18 +26,17 @@
                         <ol class="list-group list-group-numbered">
                             {{-- REFACTORED BIRTHDAY LIST --}}
                             @forelse ($birthdays as $profile)
-                            <li class="list-group-item d-flex align-items-center">
-                                {{-- Output: "Full Name of Celebrant - Current Month Day" --}}
-                                <p class="mb-0 ms-1 me-auto">{{ $profile->full_name }} - {{ $profile->birthday_month_day }}</p>
+                                <li class="list-group-item d-flex align-items-center">
+                                    {{-- Output: "Full Name of Celebrant - Current Month Day" --}}
+                                    <p class="mb-0 ms-1 me-auto">{{ $profile->full_name }} - {{ $profile->birthday_month_day }}</p>
 
-                                {{-- Action Buttons (assuming a route to view profile exists) --}}
-                                <a href="{{ route('profiles.profile', $profile->id) }}" class="btn btn-info btn-sm" title="Profile"><i
-                                    class="fa-solid fa-user"></i> View Profile</a>
-                            </li>
+                                    {{-- Action Buttons (assuming a route to view profile exists) --}}
+                                    <a href="{{ route('profiles.profile', $profile->id) }}" class="btn btn-info btn-sm" title="Profile"><i class="fa-solid fa-user"></i> View Profile</a>
+                                </li>
                             @empty
-                            <li class="list-group-item d-flex align-items-center">
-                                <p class="mb-0 ms-1 me-auto">No birthdays recorded for this month.</p>
-                            </li>
+                                <li class="list-group-item d-flex align-items-center">
+                                    <p class="mb-0 ms-1 me-auto">No birthdays recorded for this month.</p>
+                                </li>
                             @endforelse
                         </ol>
                     </div>
