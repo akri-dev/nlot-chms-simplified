@@ -7,6 +7,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+// use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 use App\Enums\GenderEnum;
 use App\Enums\MaritalStatusEnum;
@@ -151,14 +153,28 @@ class Profile extends Model
         });
     }
 
-    public function marriageAsHusband()
+    public function marriageAsHusband(): BelongsToMany // <-- CORRECTED
     {
-        return $this->hasOne(Marriage::class, 'husband_id');
+        return $this->belongsToMany(
+            Profile::class,
+            'marriages',    // 1st: The name of the pivot table
+            'husband_id',   // 2nd: The foreign key of *this* model (Profile)
+            'wife_id'       // 3rd: The foreign key of the *other* model (Wife)
+        )
+            // Add the anniversary_date so it can be retrieved if needed
+            ->withPivot('anniversary_date')
+            ->limit(1);
     }
 
-    // Relationship where this profile is the wife
-    public function marriageAsWife()
+    public function marriageAsWife(): BelongsToMany
     {
-        return $this->hasOne(Marriage::class, 'wife_id');
+        return $this->belongsToMany(
+            Profile::class,
+            'marriages',    // 1st: The name of the pivot table
+            'wife_id',      // 2nd: The foreign key of *this* model (Profile)
+            'husband_id'    // 3rd: The foreign key of the *other* model (Husband)
+        )
+            ->withPivot('anniversary_date')
+            ->limit(1); // Enforcing the one-to-one nature
     }
 }

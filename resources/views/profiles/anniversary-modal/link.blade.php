@@ -5,7 +5,9 @@
                 <h5 class="modal-title" id="myModalLabel">Profiles to Link</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form action="" method="POST">
+            <form action="{{ route('profiles.anniversaries.store') }}" method="POST">
+                @csrf
+
                 <div class="modal-body">
                     <div class="row mb-2">
                         <div>
@@ -20,24 +22,35 @@
                                 <tbody>
                                     <tr>
                                         <td class="px-4">
-                                            <select class="form-select" aria-label="Husband Select">
-                                                <option selected>Open this select menu</option>
-                                                <option value="1">One</option>
-                                                <option value="2">Two</option>
-                                                <option value="3">Three</option>
+                                            <select class="form-select" name="husband_id" aria-label="Select Husband">
+                                                @if ($male_unlinked_profiles)
+                                                    <option hidden>Select Husband</option>
+                                                    @foreach ($male_unlinked_profiles as $male_unlinked_profile)
+                                                        <option value="{{ $male_unlinked_profile->id }}">
+                                                            {{ $male_unlinked_profile->full_name }}</option>
+                                                    @endforeach
+                                                @else
+                                                    <option hidden disabled>No Record</option>
+                                                @endif
                                             </select>
                                         </td>
                                         <td class="px-4">
-                                            <select class="form-select" aria-label="Husband Select">
-                                                <option selected>Open this select menu</option>
-                                                <option value="1">One</option>
-                                                <option value="2">Two</option>
-                                                <option value="3">Three</option>
+                                            <select class="form-select" name="wife_id" aria-label="Select Wife">
+                                                @if ($female_unlinked_profiles)
+                                                    <option hidden>Select Wife</option>
+                                                    @foreach ($female_unlinked_profiles as $female_unlinked_profile)
+                                                        <option value="{{ $female_unlinked_profile->id }}">
+                                                            {{ $female_unlinked_profile->full_name }}</option>
+                                                    @endforeach
+                                                @else
+                                                    <option hidden disabled>No Record</option>
+                                                @endif
                                             </select>
                                         </td>
                                         <td class="px-4">
-                                            <input type="text" class="form-control calendar-picker" id="marriage_date"
-                                                name="marriage_date" placeholder="Select Date of Marriage">
+                                            <input type="text" class="form-control calendar-picker"
+                                                id="marriage_date" name="marriage_date"
+                                                placeholder="Select Date of Marriage">
                                             @error('marriage_date')
                                                 <div class="text-danger small">{{ $message }}</div>
                                             @enderror

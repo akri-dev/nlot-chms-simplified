@@ -74,8 +74,49 @@ class ProfileController extends Controller
 
     public function anniversaries()
     {
-        $married_profiles = Profile::where('marital_status', 'married')->get();
-        return view('profiles.anniversaries')->with('married_profiles');
+        // --- 1. Find all married males that are NOT listed as a husband yet ---
+        $male_unlinked_profiles = Profile::where('marital_status', 'married')
+            ->where('gender', 'male')
+            ->whereDoesntHave('marriageAsHusband') // Check if they are linked via the 'husband_id' column
+            ->get();
+
+        // --- 2. Find all married females that are NOT listed as a wife yet ---
+        $female_unlinked_profiles = Profile::where('marital_status', 'married')
+            ->where('gender', 'female')
+            ->whereDoesntHave('marriageAsWife') // Check if they are linked via the 'wife_id' column
+            ->get();
+
+        // The combined list of profiles who need to be linked for their anniversary
+        $profiles_needing_link = $male_unlinked_profiles->merge($female_unlinked_profiles);
+
+        // --- OPTIONAL: Get a list of profiles whose marriages ARE recorded ---
+
+        // We can use whereHas on either relationship, but we'll use 'marriageAsHusband'
+        // since this represents the primary record entry direction.
+        $linked_married_profiles = Profile::where('marital_status', 'married')
+            ->where(function ($query) {
+                $query->whereHas('marriageAsHusband')
+                    ->orWhereHas('marriageAsWife');
+            })
+            ->get();
+
+        // Separate the linked profiles by gender (if needed for display)
+        $male_linked_profiles = $linked_married_profiles->where('gender', 'male');
+        $female_linked_profiles = $linked_married_profiles->where('gender', 'female');
+
+
+        return view('profiles.anniversaries', [
+            // Profiles NOT in the marriages table (need linking/attention)
+            'male_unlinked_profiles' => $male_unlinked_profiles,
+            'female_unlinked_profiles' => $female_unlinked_profiles,
+
+            // Profiles THAT ARE in the marriages table (for displaying anniversaries)
+            'male_linked_profiles' => $male_linked_profiles,
+            'female_linked_profiles' => $female_linked_profiles,
+
+            // The combined list of linked profiles
+            'anniversary_profiles' => $linked_married_profiles,
+        ]);
     }
 
     public function profile(Profile $profile)
