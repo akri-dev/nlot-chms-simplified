@@ -28,17 +28,30 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>Araneta, Joseph</td>
-                        <td>Araneta, Carmen</td>
-                        <td>December 21, 1960</td>
-                        <td>
-                            <a href="">
-                                <button class="btn btn-danger">
-                                    <i class="fa-solid fa-pencil"></i> Edit Anniversary</button>
-                            </a>
-                        </td>
-                    </tr>
+                    @forelse ($marriages as $marriage)
+                        <tr>
+                            {{-- HUSBAND COLUMN: Uses the 'husband' relationship and the 'fullName' accessor --}}
+                            <td>{{ $marriage->husband->full_name }}</td>
+
+                            {{-- WIFE COLUMN: Uses the 'wife' relationship and the 'fullName' accessor --}}
+                            <td>{{ $marriage->wife->full_name }}</td>
+
+                            {{-- DATE OF MARRIAGE COLUMN: Uses the anniversary_date attribute (which is a Carbon instance) --}}
+                            <td>{{ $marriage->anniversary_date->format('F d, Y') }}</td>
+
+                            {{-- EDIT BUTTON COLUMN (Matching the front-end structure) --}}
+                            <td class="text-right">
+                                <a href="" class="btn btn-danger btn-sm">
+                                    <i class="fas fa-edit"></i> Edit Anniversary
+                                </a>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="4">No recorded marriages</td>
+                        </tr>
+                    @endforelse
+
                 </tbody>
             </table>
         </div>

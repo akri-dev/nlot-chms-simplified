@@ -62,10 +62,8 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <div class="me-2 d-inline-block"><a href="{{ route('profiles') }}">
-                            <button type="button" class="btn btn-outline-danger px-4"><i class="fa-solid fa-x"></i>
-                                Cancel</button>
-                        </a>
+                    <div class="me-2 d-inline-block"><button type="button" class="btn btn-outline-danger px-4" data-bs-dismiss="modal"><i class="fa-solid fa-x"></i>Cancel</button>
+
                     </div>
                     <div class="me-2 d-inline-block">
                         <button type="submit" class="btn btn-success px-4"><i class="fa-solid fa-check"></i> Save

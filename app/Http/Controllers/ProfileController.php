@@ -14,6 +14,7 @@ use App\Enums\MemberStatusEnum;
 
 use App\Models\Profile;
 use App\Models\Role;
+use App\Models\Marriage;
 
 class ProfileController extends Controller
 {
@@ -104,6 +105,7 @@ class ProfileController extends Controller
         $male_linked_profiles = $linked_married_profiles->where('gender', 'male');
         $female_linked_profiles = $linked_married_profiles->where('gender', 'female');
 
+        $marriages = Marriage::with(['husband', 'wife'])->get();
 
         return view('profiles.anniversaries', [
             // Profiles NOT in the marriages table (need linking/attention)
@@ -116,6 +118,8 @@ class ProfileController extends Controller
 
             // The combined list of linked profiles
             'anniversary_profiles' => $linked_married_profiles,
+
+            'marriages' => $marriages,
         ]);
     }
 

@@ -6,8 +6,12 @@ use Illuminate\Database\Eloquent\Model;
 
 class Marriage extends Model
 {
-    protected $dates = ['anniversary_date'];
+    // protected $dates = ['anniversary_date'];
 
+    protected $casts = [
+        'anniversary_date' => 'date',
+    ];
+    
     // Relationship to get the husband's profile
     public function husband()
     {
