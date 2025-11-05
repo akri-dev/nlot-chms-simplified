@@ -146,7 +146,6 @@
                             <div class="me-2 d-inline-block">
                                 <button type="submit" class="btn btn-success px-4"><i class="fa-solid fa-check"></i> Save
                                     Profile</button>
-
                             </div>
                         </div>
                     </div>

@@ -7,6 +7,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+// use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 use App\Enums\GenderEnum;
 use App\Enums\MaritalStatusEnum;
@@ -56,7 +58,7 @@ class Profile extends Model
     protected function fullName(): Attribute
     {
         return Attribute::make(
-            get: fn (mixed $value, array $attributes) => trim("{$attributes['first_name']} {$attributes['middle_name']} {$attributes['last_name']}"),
+            get: fn(mixed $value, array $attributes) => trim("{$attributes['first_name']} {$attributes['middle_name']} {$attributes['last_name']}"),
         );
     }
 
@@ -64,7 +66,7 @@ class Profile extends Model
     {
         return Attribute::make(
             // Since 'birthday' is cast to 'date', $this->birthday is a Carbon instance.
-            get: fn (mixed $value, array $attributes) => $this->birthday ? $this->birthday->format('F d') : 'N/A',
+            get: fn(mixed $value, array $attributes) => $this->birthday ? $this->birthday->format('F d') : 'N/A',
         );
     }
 
@@ -149,5 +151,30 @@ class Profile extends Model
                 $profile->roles()->attach($memberRole->id);
             }
         });
+    }
+
+    public function marriageAsHusband(): BelongsToMany // <-- CORRECTED
+    {
+        return $this->belongsToMany(
+            Profile::class,
+            'marriages',    // 1st: The name of the pivot table
+            'husband_id',   // 2nd: The foreign key of *this* model (Profile)
+            'wife_id'       // 3rd: The foreign key of the *other* model (Wife)
+        )
+            // Add the anniversary_date so it can be retrieved if needed
+            ->withPivot('anniversary_date')
+            ->limit(1);
+    }
+
+    public function marriageAsWife(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            Profile::class,
+            'marriages',    // 1st: The name of the pivot table
+            'wife_id',      // 2nd: The foreign key of *this* model (Profile)
+            'husband_id'    // 3rd: The foreign key of the *other* model (Husband)
+        )
+            ->withPivot('anniversary_date')
+            ->limit(1); // Enforcing the one-to-one nature
     }
 }
