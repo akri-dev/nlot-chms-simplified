@@ -21,6 +21,7 @@ Route::middleware('auth')->group(function () {
     # Profile Anniversaries
     Route::get('/profiles/anniversaries', [ProfileController::class, 'anniversaries'])->name('profiles.anniversaries');
     Route::post('/profiles/anniversaries/store', [MarriageController::class, 'store'])->name('profiles.anniversaries.store');
+    Route::delete('/profiles/anniversaries/store', [MarriageController::class, 'destroy'])->name('profiles.anniversaries.destroy');
 
     # Profile Edit
     Route::get('/profiles/{profile}', [ProfileController::class, 'profile'])->name('profiles.profile');

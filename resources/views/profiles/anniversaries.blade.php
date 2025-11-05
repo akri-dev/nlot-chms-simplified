@@ -39,11 +39,22 @@
                             {{-- DATE OF MARRIAGE COLUMN: Uses the anniversary_date attribute (which is a Carbon instance) --}}
                             <td>{{ $marriage->anniversary_date->format('F d, Y') }}</td>
 
-                            {{-- EDIT BUTTON COLUMN (Matching the front-end structure) --}}
+                            {{-- DELETE BUTTON COLUMN: Uses a form to submit a DELETE request --}}
                             <td class="text-right">
-                                <a href="" class="btn btn-danger btn-sm">
-                                    <i class="fas fa-edit"></i> Edit Anniversary
-                                </a>
+                                {{-- Form to trigger the MarriageController@destroy method --}}
+                                <form method="POST" action="{{ route('profiles.anniversaries.destroy') }}">
+                                    @csrf
+                                    @method('DELETE')
+
+                                    {{-- These hidden fields are required by the destroy method to identify the relationship --}}
+                                    <input type="hidden" name="husband_id" value="{{ $marriage->husband_id }}">
+                                    <input type="hidden" name="wife_id" value="{{ $marriage->wife_id }}">
+
+                                    {{-- The delete button --}}
+                                    <button type="submit" class="btn btn-danger btn-sm">
+                                        <i class="fas fa-trash"></i> Delete Record
+                                    </button>
+                                </form>
                             </td>
                         </tr>
                     @empty

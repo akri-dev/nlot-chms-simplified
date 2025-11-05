@@ -12,9 +12,9 @@
                     <button class="btn btn-success"><i class="fa-solid fa-user"></i> Profile List</button>
                 </a>
             </div>
-            <div class="me-2"><button class="btn btn-primary"><i class="fa-solid fa-calendar-week"></i> Events List</button>
+            <div class="me-2"><button class="btn btn-primary" disabled><i class="fa-solid fa-calendar-week"></i> Events List</button>
             </div>
-            <div><button class="btn btn-dark"><i class="fa-solid fa-calendar-week"></i> Calendar</button></div>
+            <div><button class="btn btn-dark" disabled><i class="fa-solid fa-calendar-week"></i> Calendar</button></div>
         </div>
     </div>
     <div class="row">
@@ -28,10 +28,12 @@
                             @forelse ($birthdays as $profile)
                                 <li class="list-group-item d-flex align-items-center">
                                     {{-- Output: "Full Name of Celebrant - Current Month Day" --}}
-                                    <p class="mb-0 ms-1 me-auto">{{ $profile->full_name }} - {{ $profile->birthday_month_day }}</p>
+                                    <p class="mb-0 ms-1 me-auto">{{ $profile->full_name }} -
+                                        {{ $profile->birthday_month_day }}</p>
 
                                     {{-- Action Buttons (assuming a route to view profile exists) --}}
-                                    <a href="{{ route('profiles.profile', $profile->id) }}" class="btn btn-info btn-sm" title="Profile"><i class="fa-solid fa-user"></i> View Profile</a>
+                                    <a href="{{ route('profiles.profile', $profile->id) }}" class="btn btn-info btn-sm"
+                                        title="Profile"><i class="fa-solid fa-user"></i> View Profile</a>
                                 </li>
                             @empty
                                 <li class="list-group-item d-flex align-items-center">
@@ -45,25 +47,25 @@
                     <div class="col mb-2">
                         <h3 class="h4 mb-1">Anniversaries</h3>
                         <ol class="list-group list-group-numbered">
-                            <li class="list-group-item d-flex align-items-center">
-                                {{-- Name and Birthday --}}
-                                <p class="mb-0 ms-1 me-auto">Cesar & Lourdes - October 04</p>
-
-                                {{-- Action Buttons --}}
-                                <a href="" class="btn btn-light btn-sm" title="Profile"><i
-                                        class="fa-solid fa-calendar-days"></i></i> Check Calendar</a>
-                            </li>
-                            <li class="list-group-item d-flex align-items-center">
-                                {{-- Name and Birthday --}}
-                                <p class="mb-0 ms-1 me-auto">John & Geraldine - October 08</p>
-
-                                {{-- Action Buttons --}}
-                                <a href="" class="btn btn-light btn-sm" title="Profile"><i
-                                        class="fa-solid fa-calendar-days"></i> Check Calendar</a>
-                            </li>
+                            {{-- Name and Birthday --}}
+                            @if ($anniversaries->isNotEmpty())
+                                @foreach ($anniversaries as $husband)
+                                    @foreach ($husband->marriageAsHusband as $wife)
+                                        <li class="list-group-item d-flex align-items-center">
+                                            <p class="mb-0 ms-1 me-auto">
+                                                {{ $husband->first_name }} & {{ $wife->full_name }}
+                                                - {{ \Carbon\Carbon::parse($wife->pivot->anniversary_date)->format('F d') }}
+                                            </p>
+                                        </li>
+                                    @endforeach
+                                @endforeach
+                            @else
+                                <li class="list-group-item d-flex align-items-center">No anniversaries this month.</li>
+                            @endif
                         </ol>
                     </div>
                 </div>
+                <!--
                 <div class="row">
                     <div class="col mb-2">
                         <h3 class="h4 mb-1">Events</h3>
@@ -79,6 +81,7 @@
                         </ol>
                     </div>
                 </div>
+                 -->
             </div>
         </div>
         <div class="col-4 text-center">

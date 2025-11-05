@@ -22,35 +22,35 @@
                                 <tbody>
                                     <tr>
                                         <td class="px-4">
-                                            <select class="form-select" name="husband_id" aria-label="Select Husband">
-                                                @if ($male_unlinked_profiles)
+                                            <select class="form-select" name="husband_id" aria-label="Select Husband" @if (!$male_unlinked_profiles->isNotEmpty()) disabled @endif>
+                                                @if ($male_unlinked_profiles->isNotEmpty())
                                                     <option hidden>Select Husband</option>
                                                     @foreach ($male_unlinked_profiles as $male_unlinked_profile)
                                                         <option value="{{ $male_unlinked_profile->id }}">
                                                             {{ $male_unlinked_profile->full_name }}</option>
                                                     @endforeach
                                                 @else
-                                                    <option hidden disabled>No Record</option>
+                                                    <option hidden>No Record</option>
                                                 @endif
                                             </select>
                                         </td>
                                         <td class="px-4">
-                                            <select class="form-select" name="wife_id" aria-label="Select Wife">
-                                                @if ($female_unlinked_profiles)
+                                            <select class="form-select" name="wife_id" aria-label="Select Wife" @if (!$female_unlinked_profiles->isNotEmpty()) disabled @endif>
+                                                @if ($female_unlinked_profiles->isNotEmpty())
                                                     <option hidden>Select Wife</option>
                                                     @foreach ($female_unlinked_profiles as $female_unlinked_profile)
                                                         <option value="{{ $female_unlinked_profile->id }}">
                                                             {{ $female_unlinked_profile->full_name }}</option>
                                                     @endforeach
                                                 @else
-                                                    <option hidden disabled>No Record</option>
+                                                    <option hidden>No Record</option>
                                                 @endif
                                             </select>
                                         </td>
                                         <td class="px-4">
                                             <input type="text" class="form-control calendar-picker"
                                                 id="marriage_date" name="marriage_date"
-                                                placeholder="Select Date of Marriage">
+                                                placeholder="Select Date of Marriage" @if (!$profiles_needing_link->isNotEmpty()) disabled @endif>
                                             @error('marriage_date')
                                                 <div class="text-danger small">{{ $message }}</div>
                                             @enderror

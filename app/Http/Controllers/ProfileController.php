@@ -120,6 +120,8 @@ class ProfileController extends Controller
             'anniversary_profiles' => $linked_married_profiles,
 
             'marriages' => $marriages,
+
+            'profiles_needing_link' => $profiles_needing_link
         ]);
     }
 
